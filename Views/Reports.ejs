@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtered Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        .form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #218838;
+        }
+
+        .count {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .table th {
+            background: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .table tr:hover {
+            background: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">Filtered Data</h1>
+
+        <!-- Filters Form -->
+        <form method="GET" action="/reports" class="form">
+            <select name="studentName" class="form-input">
+                <option value="">Select Student</option>
+                <% filters.students.forEach(student => { %>
+                    <option value="<%= student.name %>"><%= student.name %></option>
+                <% }) %>
+            </select>
+
+            <select name="bookName" class="form-input">
+                <option value="">Select Book</option>
+                <% filters.books.forEach(book => { %>
+                    <option value="<%= book.name %>"><%= book.name %></option>
+                <% }) %>
+            </select>
+
+            <select name="type" class="form-input">
+                <option value="">Select Type</option>
+                <% filters.types.forEach(type => { %>
+                    <option value="<%= type.type %>"><%= type.type %></option>
+                <% }) %>
+            </select>
+
+            <button type="submit" class="btn">Search</button>
+        </form>
+
+        <!-- Count Display -->
+        <div class="count">
+            Total Records: <%= data.length %>
+        </div>
+
+        <!-- Data Table -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Student Name</th>
+                    <th>Book Name</th>
+                    <th>Creation Date</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% data.forEach(row => { %>
+                    <tr>
+                        <td><%= row.studentid %></td>
+                        <td><%= row.studentName %></td>
+                        <td><%= row.bookName %></td>
+                        <td><%= row.creationdate %></td>
+                        <td><%= row.type %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

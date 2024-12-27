@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Students</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* General Reset */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar styling */
+        nav {
+            width: 250px;
+            background-color: #343a40;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding-top: 20px;
+            position: fixed;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        nav.hidden {
+            transform: translateX(-250px);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin: 10px 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 18px;
+            padding: 10px 20px;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            background-color: #495057;
+            border-radius: 5px;
+        }
+
+        /* Menu toggle button */
+        .menu-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #343a40;
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            z-index: 2000;
+        }
+
+        .menu-toggle:hover {
+            background-color: #495057;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #ffffff;
+            margin: 5px auto;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Container */
+        .container {
+            flex: 1;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            max-width: 1200px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: margin-left 0.3s ease;
+        }
+
+        .container.shifted {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        /* Page Title */
+        .page-title {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        /* Form Styling */
+        .form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #218838;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+        }
+
+        .btn-edit:hover {
+            background: #e0a800;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        /* Table Styling */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .table th {
+            background: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .table tr:hover {
+            background: #f1f1f1;
+        }
+
+        /* Inline Forms */
+        .inline-form {
+            display: inline;
+        }
+
+        .inline-form input {
+            margin: 5px 0;
+            padding: 5px;
+            font-size: 0.9em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .inline-form .btn {
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <nav id="sidebar">
+        <h2 style="text-align:center;">Menu</h2>
+        <ul>
+            <li><a href="/">Dashboard</a></li>
+            <li><a href="/students">Manage Students</a></li>
+            <li><a href="/books">Manage Book</a></li>
+            <li><a href="/issuebook">Issue Book</a></li>
+            <li><a href="/returnbook">Return Book</a></li>
+        </ul>
+    </nav>
+    <div class="container" id="mainContent">
+        <h1 class="page-title">Manage Students</h1>
+    
+        <!-- Form to Add a New Student -->
+        <form action="/students/add" method="POST" class="form">
+            <input type="text" name="name" placeholder="Student Name" class="form-input" required>
+            <input type="text" name="class" placeholder="Class" class="form-input" required>
+            <input type="text" name="rollno" placeholder="Roll Number" class="form-input" required>
+            <button type="submit" class="btn">Add Student</button>
+        </form>
+    
+        <!-- Table to Display Existing Students -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>Roll Number</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% students.forEach(student => { %>
+                    <tr>
+                        <td><%= student.name %></td>
+                        <td><%= student.class %></td>
+                        <td><%= student.rollno %></td>
+                        <td>
+                            <!-- Inline Form for Editing a Student -->
+                            <form action="/students/edit/<%= student.name %>" method="POST" class="inline-form">
+                                <input type="text" name="class" value="<%= student.class %>" class="form-input" required>
+                                <input type="text" name="rollno" value="<%= student.rollno %>" class="form-input" required>
+                                <button type="submit" class="btn btn-edit">Edit</button>
+                            </form>
+                            <!-- Inline Form for Deleting a Student -->
+                            <form action="/students/delete/<%= student.name %>" method="POST" class="inline-form">
+                                <button type="submit" class="btn btn-delete">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('mainContent');
+            sidebar.classList.toggle('hidden');
+            content.classList.toggle('shifted');
+        }
+    </script>
+</body>
+</html>

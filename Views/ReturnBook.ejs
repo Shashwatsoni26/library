@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Books</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #343a40;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            display: block;
+            font-size: 16px;
+        }
+
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+
+        .container {
+            flex: 1;
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        select:invalid {
+            color: gray;
+        }
+
+        button {
+            background-color: #dc3545;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #c82333;
+        }
+
+        .form-group .error {
+            color: red;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <a href="/">Dashboard</a>
+        <a href="/students">Manage Students</a>
+        <a href="/books">Manage Books</a>
+        <a href="/issuebook">Issue Books</a>
+        <a href="/returnbook">Return Books</a>
+    </div>
+
+    <div class="container">
+        <h1>Return Books</h1>
+
+        <!-- Form to Return a Book -->
+        <form action="/returnbook/return" method="POST" onsubmit="return validateForm()">
+            <div class="form-group">
+                <label for="student">Select Student</label>
+                <select name="student" id="student" required onchange="fetchBooks(this.value)">
+                    <option value="" disabled selected>Select a student</option>
+                    <% students.forEach(student => { %>
+                        <option value="<%= student.name %>"><%= student.name %></option>
+                    <% }); %>
+                </select>
+                <div class="error" id="studentError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="book">Select Book</label>
+                <select name="book" id="book" required>
+                    <option value="" disabled selected>Select a book</option>
+                </select>
+                <div class="error" id="bookError"></div>
+            </div>
+
+            <button type="submit">Return Book</button>
+        </form>
+    </div>
+
+    <script>
+        async function fetchBooks(studentName) {
+            const bookDropdown = document.getElementById('book');
+            const bookError = document.getElementById('bookError');
+            
+            // Clear current options
+            bookDropdown.innerHTML = '<option value="" disabled selected>Select a book</option>';
+
+            if (!studentName) {
+                return; // Exit if no student is selected
+            }
+
+            try {
+                const response = await fetch(`/returnbook/books/${studentName}`);
+                const data = await response.json();
+
+                if (data.success && data.books.length > 0) {
+                    data.books.forEach(book => {
+                        const option = document.createElement('option');
+                        option.value = book.name;
+                        option.textContent = book.name;
+                        bookDropdown.appendChild(option);
+                    });
+                } else {
+                    bookError.innerText = 'No books found for the selected student.';
+                }
+            } catch (error) {
+                console.error('Error fetching books:', error);
+                bookError.innerText = 'Failed to fetch books. Please try again.';
+            }
+        }
+
+        function validateForm() {
+            let student = document.getElementById('student');
+            let book = document.getElementById('book');
+            let isValid = true;
+
+            if (!student.value) {
+                document.getElementById('studentError').innerText = 'Please select a student.';
+                isValid = false;
+            } else {
+                document.getElementById('studentError').innerText = '';
+            }
+
+            if (!book.value) {
+                document.getElementById('bookError').innerText = 'Please select a book.';
+                isValid = false;
+            } else {
+                document.getElementById('bookError').innerText = '';
+            }
+
+            return isValid;
+        }
+    </script>
+</body>
+</html>
